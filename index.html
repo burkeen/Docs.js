@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Docs.js Example</title>
+		 
+		<link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="demo.css">
+		
+	</head>
+	<body>
+		<a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+		<h1>Docs.js</h1>
+		<h2>PHP</h2>
+		<input type="text" id="search" placeholder="Type in a function to search" autocomplete="off">
+		
+		<div id="loading">Loading</div>
+		
+		<p>
+			<span class="name" id="synopsis">Synopsis: <span class="value"></span></span>
+			<span class="name" id="description">Description: <span class="value"></span></span>
+			<span class="name" id="return">Return: <span class="value"></span></span>
+			<span class="name" id="para">Parameters: <span class="value"></span></span>
+		</p>
+		
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript" src="jquery.typeahead.custom.js"></script>
+		<script type="text/javascript" src="docs.js"></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+				var names = [];
+				Docs.getFunctions(function(data){
+					
+					for(var i in data){
+						names.push(data[i].name);
+					}
+					
+					$('#search').typeahead({
+						source:names,
+						onselect: function(funcName){
+							
+							$('#search').fadeOut(function(){
+								$('#loading').fadeIn(function(){
+									Docs.getDetails(funcName, function(data){
+								
+										$('#synopsis .value').text(data.synopsis);
+										$('#description .value').text(data.description);
+										$('#return .value').text(data.returnValues);
+										$('#para .value').text(data.parameters.toString());
+										
+										$('#loading').fadeOut(function(){
+											$('#search').val('').fadeIn(function(){
+												$('p').animate({
+													top:0,
+													opacity:1
+												});
+											});
+										});
+									});
+								});
+							});
+							$('p').animate({
+								top:-20,
+								opacity:0
+							});
+						}
+					});
+					$('#loading').fadeOut(function(){
+						$('#search').fadeIn();
+					});
+				});
+				
+				
+				
+			});
+			
+		</script>
+	</body>
+</html>
